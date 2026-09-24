@@ -275,7 +275,7 @@ input:focus-visible,textarea:focus-visible,.btn:focus-visible,a:focus-visible{ou
       timer = setInterval(tick, 250);
 
       $('#finish').onclick = () => {
-        if (confirm('Have you pressed Submit inside the form? You cannot return after finishing.')) stop('done');
+        if (confirm('⚠️You must click “SUBMIT” inside the Google Form to complete your submission. Do NOT leave or close the form until you have pressed “SUBMIT” and received the submission confirmation.')) stop('done');
       };
 
       // ---- Stay-on-page guard ----
