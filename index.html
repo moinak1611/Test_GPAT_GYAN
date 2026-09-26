@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GPAT GYAN | TMS</title>
+<title>GPAT GYAN | TMS (Copy)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -34,6 +34,8 @@ input:focus-visible,textarea:focus-visible,.btn:focus-visible,a:focus-visible{ou
 .btn{font:600 1rem var(--body);background:var(--brand);color:#fff;border:0;border-radius:8px;padding:12px 18px;cursor:pointer;text-decoration:none;display:inline-block;text-align:center}
 .btn:hover{filter:brightness(1.08)}
 .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink)}
+.btn.sm{padding:6px 10px;font-size:.82rem;border-radius:6px}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
 .err{color:var(--bad);margin:0;min-height:1.2em;font-size:.92rem}
 .hint{color:var(--mute);font-size:.88rem;margin:0}
 .center{min-height:100%;display:grid;place-content:center;justify-items:start;padding:24px;max-width:640px;margin:0 auto}
@@ -54,6 +56,14 @@ input:focus-visible,textarea:focus-visible,.btn:focus-visible,a:focus-visible{ou
 .warn{position:absolute;inset:0;z-index:10;background:rgba(16,24,40,.96);color:#fff;display:grid;place-content:center;padding:24px}
 .warn div{max-width:520px}.warn p{color:#D3D9E4}
 .last{background:var(--bad);color:#fff;text-align:center;font-weight:600;font-size:.9rem;padding:6px 12px}
+.hist{border-top:1px solid var(--line);margin-top:6px;padding-top:16px;display:grid;gap:10px}
+.hist h3{font-family:var(--display);font-size:1.05rem;margin:0 0 4px}
+.hist-item{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;gap:6px}
+.hist-item .row1{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.hist-item .row1 strong{font-size:.98rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist-item .meta{color:var(--mute);font-size:.8rem}
+.hist-item .actions{display:flex;gap:6px;flex-wrap:wrap}
+.hist-empty{color:var(--mute);font-size:.9rem}
 @media(max-width:760px){.wrap{grid-template-columns:1fr}.row{grid-template-columns:1fr}.bar strong{display:none}}
 </style>
 </head>
@@ -65,8 +75,13 @@ input:focus-visible,textarea:focus-visible,.btn:focus-visible,a:focus-visible{ou
     <h1>GPAT GYAN </h1>
     <h1>Test Management System (TMS)</h1>
     <p>Paste a Google Form, set how long candidates get, and share one link. The form opens inside this page, and it locks when the clock reaches zero.</p>
+    <div class="hist" id="hist-wrap">
+      <h3>Previously created tests</h3>
+      <div id="hist-list"></div>
+    </div>
   </section>
   <section class="panel">
+    <p id="edit-flag" class="hint" hidden>Editing an existing test. Saving will update its link.</p>
     <label>Test title<input id="f-title" value="Untitled test"></label>
     <label>Google Form link
       <textarea id="f-url" rows="2" placeholder="https://docs.google.com/forms/d/e/…/viewform"></textarea>
@@ -82,7 +97,10 @@ input:focus-visible,textarea:focus-visible,.btn:focus-visible,a:focus-visible{ou
     <label>Instructions for candidates
       <textarea id="f-note" rows="3">You must press “SUBMIT” at the end of the Google Form before the time runs out. The timer will continue running even if you refresh the page.</textarea>
     </label>
-    <button id="make" class="btn" type="button">Create test link</button>
+    <div class="row">
+      <button id="make" class="btn" type="button">Create test link</button>
+      <button id="cancel-edit" class="btn ghost" type="button" hidden>Cancel edit / new test</button>
+    </div>
     <p id="err" class="err" role="alert"></p>
     <div id="out" hidden style="display:grid;gap:12px">
       <label>Share this link with candidates<input id="f-link" readonly></label>
@@ -178,11 +196,100 @@ input:focus-visible,textarea:focus-visible,.btn:focus-visible,a:focus-visible{ou
     return { url: u.href };
   }
 
+  // ---------- Creator history (list of tests made on this device/browser) ----------
+  const HKEY = 'tms_history_v1';
+  const loadHist = () => { try { return JSON.parse(localStorage.getItem(HKEY) || '[]'); } catch { return []; } };
+  const saveHist = list => { try { localStorage.setItem(HKEY, JSON.stringify(list)); } catch {} };
+  let editingId = null;
+
+  function upsertHist(cfg, link, rawUrl) {
+    const list = loadHist();
+    const idx = editingId ? list.findIndex(x => x.id === editingId) : -1;
+    const entry = {
+      id: editingId || (Date.now() + '-' + Math.random().toString(36).slice(2, 7)),
+      t: cfg.t, m: cfg.m, c: cfg.c, i: cfg.i, w: cfg.w, f: cfg.f,
+      rawUrl: rawUrl, link,
+      created: idx >= 0 ? list[idx].created : Date.now(),
+      updated: Date.now()
+    };
+    if (idx >= 0) list[idx] = entry; else list.unshift(entry);
+    saveHist(list);
+    editingId = entry.id;
+    renderHist();
+  }
+
+  function fmtDate(ts) { try { return new Date(ts).toLocaleString(); } catch { return ''; } }
+
+  function renderHist() {
+    const wrap = $('#hist-list');
+    const list = loadHist();
+    if (!list.length) { wrap.innerHTML = '<p class="hist-empty">No tests created yet on this device.</p>'; return; }
+    wrap.innerHTML = '';
+    list.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'hist-item';
+      const closeInfo = item.c ? ('Closes ' + fmtDate(item.c)) : 'No close date';
+      div.innerHTML =
+        '<div class="row1"><strong>' + esc(item.t) + '</strong><span class="meta">' + item.m + ' min</span></div>' +
+        '<span class="meta">' + closeInfo + ' · created ' + fmtDate(item.created) + '</span>' +
+        '<div class="actions">' +
+          '<button class="btn sm ghost" data-act="copy">Copy link</button>' +
+          '<a class="btn sm ghost" data-act="preview" href="' + (item.link + '').replace('#', '?preview=1#') + '" target="_blank" rel="noopener">Preview</a>' +
+          '<button class="btn sm ghost" data-act="edit">Edit</button>' +
+          '<button class="btn sm danger" data-act="delete">Delete</button>' +
+        '</div>';
+      div.querySelector('[data-act="copy"]').onclick = async () => {
+        try { await navigator.clipboard.writeText(item.link); } catch {}
+        const b = div.querySelector('[data-act="copy"]'); b.textContent = 'Copied'; setTimeout(() => b.textContent = 'Copy link', 1200);
+      };
+      div.querySelector('[data-act="edit"]').onclick = () => loadIntoForm(item);
+      div.querySelector('[data-act="delete"]').onclick = () => {
+        if (!confirm('Delete "' + item.t + '" from history? The link itself will still work if someone has it saved.')) return;
+        saveHist(loadHist().filter(x => x.id !== item.id));
+        if (editingId === item.id) clearEdit();
+        renderHist();
+      };
+      wrap.appendChild(div);
+    });
+  }
+
+  function esc(s) { return (s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+  function loadIntoForm(item) {
+    editingId = item.id;
+    $('#f-title').value = item.t;
+    $('#f-url').value = item.rawUrl || '';
+    $('#f-min').value = item.m;
+    $('#f-close').value = item.c ? new Date(item.c - new Date(item.c).getTimezoneOffset() * 60000).toISOString().slice(0, 16) : '';
+    $('#f-warn').value = item.w;
+    $('#f-fs').checked = !!item.f;
+    $('#f-note').value = item.i;
+    $('#edit-flag').hidden = false;
+    $('#cancel-edit').hidden = false;
+    $('#out').hidden = true;
+    $('#f-title').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function clearEdit() {
+    editingId = null;
+    $('#edit-flag').hidden = true;
+    $('#cancel-edit').hidden = true;
+  }
+
   // ---------- Creator ----------
   function creator() {
     show('creator');
+    renderHist();
+    $('#cancel-edit').onclick = () => {
+      clearEdit();
+      $('#f-title').value = 'Untitled test'; $('#f-url').value = ''; $('#f-min').value = 30;
+      $('#f-close').value = ''; $('#f-warn').value = 2; $('#f-fs').checked = true;
+      $('#f-note').value = 'You must press “SUBMIT” at the end of the Google Form before the time runs out. The timer will continue running even if you refresh the page.';
+      $('#out').hidden = true; $('#err').textContent = '';
+    };
     $('#make').onclick = () => {
-      const r = cleanUrl($('#f-url').value);
+      const rawUrl = $('#f-url').value;
+      const r = cleanUrl(rawUrl);
       $('#out').hidden = true;
       if (r.error) { $('#err').textContent = r.error; return; }
       $('#err').textContent = '';
@@ -196,9 +303,13 @@ input:focus-visible,textarea:focus-visible,.btn:focus-visible,a:focus-visible{ou
         f: $('#f-fs').checked
       };
       const p = enc(cfg);
-      $('#f-link').value = base + '#' + p;
+      const link = base + '#' + p;
+      $('#f-link').value = link;
       $('#prev').href = base + '?preview=1#' + p;
       $('#out').hidden = false;
+      upsertHist(cfg, link, rawUrl.trim());
+      $('#edit-flag').hidden = false;
+      $('#cancel-edit').hidden = false;
     };
     $('#copy').onclick = async () => {
       const el = $('#f-link');
