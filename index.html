@@ -7,10 +7,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
 <style>
 :root{
   --bg:#EEF1F6;--ink:#101828;--mute:#5B6577;--line:#D3D9E4;--card:#fff;
-  --brand:#2F5BFF;--ok:#0B7A53;--warn:#B54708;--bad:#C01048;
+  --brand:#2F5BFF;--ok:#0B7A53;--warnc:#B54708;--bad:#C01048;
   --display:"Bricolage Grotesque","Trebuchet MS",sans-serif;
   --body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
@@ -19,104 +22,187 @@ html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--body)}
 body.inroom{overflow:hidden}
 [hidden]{display:none!important}
-h1,h2{font-family:var(--display);line-height:1.08;margin:0 0 .5em;letter-spacing:-.02em}
-h1{font-size:clamp(2.2rem,5vw,3.6rem);font-weight:700}
-h2{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700}
-p{margin:0 0 1em;max-width:62ch}
-.wrap{max-width:1040px;margin:0 auto;padding:clamp(24px,6vw,72px) 20px;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(24px,5vw,64px);align-items:start}
+h1,h2,h3{font-family:var(--display);line-height:1.1;margin:0 0 .5em;letter-spacing:-.02em}
+h1{font-size:clamp(2rem,4.5vw,3.2rem);font-weight:700}
+h2{font-size:clamp(1.5rem,3.2vw,2.1rem);font-weight:700}
+h3{font-size:1.05rem;font-weight:700}
+p{margin:0 0 1em;max-width:68ch}
+.wrap{max-width:1100px;margin:0 auto;padding:clamp(20px,5vw,56px) 20px}
 .intro p{color:var(--mute)}
-.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:clamp(18px,3vw,28px);display:grid;gap:16px}
-label{display:grid;gap:6px;font-weight:600;font-size:.92rem}
-input,textarea{font:inherit;font-weight:400;color:var(--ink);padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;width:100%}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:clamp(16px,3vw,26px);margin-bottom:18px}
+label{display:grid;gap:6px;font-weight:600;font-size:.9rem}
+input,textarea,select{font:inherit;font-weight:400;color:var(--ink);padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:#fff;width:100%}
 textarea{resize:vertical}
-input:focus-visible,textarea:focus-visible,.btn:focus-visible,a:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.btn{font:600 1rem var(--body);background:var(--brand);color:#fff;border:0;border-radius:8px;padding:12px 18px;cursor:pointer;text-decoration:none;display:inline-block;text-align:center}
+input:focus-visible,textarea:focus-visible,select:focus-visible,.btn:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.row{display:grid;gap:12px}
+.row2{grid-template-columns:1fr 1fr}
+.row3{grid-template-columns:1fr 1fr 1fr}
+.btn{font:600 .95rem var(--body);background:var(--brand);color:#fff;border:0;border-radius:8px;padding:10px 16px;cursor:pointer;text-decoration:none;display:inline-block;text-align:center}
 .btn:hover{filter:brightness(1.08)}
 .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink)}
-.err{color:var(--bad);margin:0;min-height:1.2em;font-size:.92rem}
-.hint{color:var(--mute);font-size:.88rem;margin:0}
+.btn.sm{padding:6px 10px;font-size:.85rem}
+.btn.danger{background:var(--bad)}
+.err{color:var(--bad);margin:0;min-height:1.2em;font-size:.9rem}
+.hint{color:var(--mute);font-size:.85rem;margin:0}
 .center{min-height:100%;display:grid;place-content:center;justify-items:start;padding:24px;max-width:640px;margin:0 auto}
-.facts{display:flex;gap:28px;margin:0 0 1.5em;padding:0;list-style:none}
-.facts b{display:block;font:700 2rem/1 var(--display)}
-.facts span{color:var(--mute);font-size:.88rem}
+.tabs{display:flex;gap:8px;margin-bottom:16px}
+.tab-btn{font:600 .92rem var(--body);background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 16px;cursor:pointer}
+.tab-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.qcard{border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px;display:grid;gap:10px;background:#FAFBFD}
+.qcard .top{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.qcard .top select{max-width:190px}
+.qcard .top input[type=number]{max-width:90px}
+.optrow{display:flex;gap:10px;align-items:center;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.optrow input[type=text]{flex:1;border:0;padding:4px 2px}
+.optrow input[type=text]:focus-visible{outline:none;background:#F2F5FF}
+.optrow input[type=radio],.optrow input[type=checkbox]{width:18px;height:18px;flex:none;margin:0;accent-color:var(--brand)}
+.imgrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.imgrow input[type=text]{flex:1;min-width:160px}
+.imgrow img{max-width:160px;max-height:100px;border-radius:6px;border:1px solid var(--line)}
+.badge{display:inline-block;font-size:.75rem;font-weight:700;color:var(--brand);background:#E6ECFF;border-radius:999px;padding:2px 9px}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{color:var(--mute);font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.03em}
+.facts{display:flex;gap:24px;margin:0 0 1.3em;padding:0;list-style:none;flex-wrap:wrap}
+.facts b{display:block;font:700 1.8rem/1 var(--display)}
+.facts span{color:var(--mute);font-size:.85rem}
 #room{position:fixed;inset:0;height:100%;height:100dvh;display:flex;flex-direction:column;background:#fff}
 .bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line)}
-.bar strong{font:700 1.05rem var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.clock{font:700 1.7rem/1 var(--display);font-variant-numeric:tabular-nums;color:var(--ok);transition:color .3s}
-.clock.warn{color:var(--warn)}.clock.bad{color:var(--bad)}
-.bar .btn{padding:8px 14px;font-size:.92rem;white-space:nowrap}
-.track{height:5px;background:var(--line)}
+.bar strong{font:700 1rem var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.clock{font:700 1.5rem/1 var(--display);font-variant-numeric:tabular-nums;color:var(--ok);transition:color .3s}
+.clock.warnlvl{color:var(--warnc)}.clock.badlvl{color:var(--bad)}
+.track{height:5px;background:var(--line);flex:none}
 .track i{display:block;height:100%;width:100%;background:var(--ok);transition:width .3s linear,background .3s}
-.track i.warn{background:var(--warn)}.track i.bad{background:var(--bad)}
-#frame{flex:1;width:100%;border:0;background:#fff}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.warn{position:absolute;inset:0;z-index:10;background:rgba(16,24,40,.96);color:#fff;display:grid;place-content:center;padding:24px}
-.warn div{max-width:520px}.warn p{color:#D3D9E4}
-.last{background:var(--bad);color:#fff;text-align:center;font-weight:600;font-size:.9rem;padding:6px 12px}
-@media(max-width:760px){.wrap{grid-template-columns:1fr}.row{grid-template-columns:1fr}.bar strong{display:none}}
+.track i.warnlvl{background:var(--warnc)}.track i.badlvl{background:var(--bad)}
+.qscroll{flex:1;overflow:auto;padding:20px}
+.qscroll .inner{max-width:760px;margin:0 auto}
+.qview{border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:14px;background:#fff}
+.qview .qn{color:var(--mute);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+.qview img{max-width:100%;border-radius:8px;margin:8px 0;display:block}
+.choice{display:flex;gap:10px;align-items:flex-start;padding:8px 0;cursor:pointer}
+.choice input{width:auto;margin-top:3px}
+.last{background:var(--bad);color:#fff;text-align:center;font-weight:600;font-size:.9rem;padding:6px 12px;flex:none}
+.modalOverlay{position:absolute;inset:0;z-index:10;background:rgba(16,24,40,.96);color:#fff;display:grid;place-content:center;padding:24px}
+.modalOverlay div{max-width:520px}.modalOverlay p{color:#D3D9E4}
+.codebox{font:600 .9rem/1.4 ui-monospace,Menlo,Consolas,monospace;background:#F2F4F8;border:1px solid var(--line);border-radius:8px;padding:10px;word-break:break-all}
+@media(max-width:760px){.row2,.row3{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<!-- CREATOR: shown when the page is opened without a test link -->
-<main id="creator" class="wrap" hidden>
+<!-- DESIGNER -->
+<main id="designer" class="wrap" hidden>
   <section class="intro">
-    <h1>GPAT GYAN </h1>
-    <h1>Test Management System (TMS)</h1>
-    <p>Paste a Google Form, set how long candidates get, and share one link. The form opens inside this page, and it locks when the clock reaches zero.</p>
+    <h1>GPAT GYAN</h1>
+    <p>Design questions, generate one shareable test link, and collect results back as short codes — no server needed.</p>
   </section>
-  <section class="panel">
-    <label>Test title<input id="f-title" value="Untitled test"></label>
-    <label>Google Form link
-      <textarea id="f-url" rows="2" placeholder="https://docs.google.com/forms/d/e/…/viewform"></textarea>
-    </label>
-    <div class="row">
-      <label>Time limit (minutes)<input id="f-min" type="number" min="1" max="600" value="30"></label>
-      <label>Link stops working at (fix date and time)<input id="f-close" type="datetime-local"></label>
-    </div>
-    <div class="row">
-      <label>Warnings before the test ends<input id="f-warn" type="number" min="0" max="5" value="2"></label>
-      <label style="grid-template-columns:auto 1fr;align-items:center;align-self:end;gap:10px;padding-bottom:10px"><input id="f-fs" type="checkbox" checked style="width:auto"> Require full screen (laptop, Android, iPad)</label>
-    </div>
-    <label>Instructions for candidates
-      <textarea id="f-note" rows="3">You must press “SUBMIT” at the end of the Google Form before the time runs out. The timer will continue running even if you refresh the page.</textarea>
-    </label>
-    <button id="make" class="btn" type="button">Create test link</button>
-    <p id="err" class="err" role="alert"></p>
-    <div id="out" hidden style="display:grid;gap:12px">
-      <label>Share this link with candidates<input id="f-link" readonly></label>
-      <div class="row">
-        <button id="copy" class="btn ghost" type="button">Copy link</button>
-        <a id="prev" class="btn ghost" target="_blank" rel="noopener">Preview (timer not saved)</a>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="build" type="button">Build</button>
+    <button class="tab-btn" data-tab="results" type="button">Results</button>
+  </div>
+
+  <div id="tab-build">
+    <section class="panel row" style="gap:14px">
+      <h3>Test settings</h3>
+      <label>Test title<input id="d-title"></label>
+      <div class="row row2">
+        <label>Time limit (minutes)<input id="d-min" type="number" min="1" max="600"></label>
+        <label>Link stops working at (optional)<input id="d-close" type="datetime-local"></label>
       </div>
-      <p class="hint">The form address is packed inside the link and never shown on screen.</p>
-    </div>
-  </section>
+      <div class="row row3">
+        <label>Warnings before auto-submit<input id="d-warn" type="number" min="0" max="5"></label>
+        <label style="grid-template-columns:auto 1fr;align-items:center;gap:8px;align-self:end;padding-bottom:9px"><input id="d-fs" type="checkbox" style="width:auto"> Require full screen</label>
+        <label style="grid-template-columns:auto 1fr;align-items:center;gap:8px;align-self:end;padding-bottom:9px"><input id="d-shq" type="checkbox" style="width:auto"> Shuffle question order</label>
+      </div>
+      <div class="row row3">
+        <label style="grid-template-columns:auto 1fr;align-items:center;gap:8px"><input id="d-roll" type="checkbox" style="width:auto"> Ask for a Roll No / ID too</label>
+        <label>Roll No / ID field label<input id="d-rolllabel"></label>
+        <label>Default negative marks per wrong answer<input id="d-negdef" type="number" min="0" step="0.25"></label>
+      </div>
+      <label>Your email for results (optional — lets candidates one-tap send you their result)<input id="d-email" type="email" placeholder="teacher@example.com"></label>
+      <label>Instructions shown before the test starts<textarea id="d-note" rows="2"></textarea></label>
+    </section>
+
+    <section class="panel">
+      <h3>Questions</h3>
+      <p class="hint">Question and option text can include equations — wrap them in $...$ (inline) or $$...$$ (block), e.g. <code>$E=mc^2$</code>. Add an image via URL, or upload one (keep uploads small — they get embedded directly in the link, so a big image makes the link huge).</p>
+      <div id="qlist"></div>
+      <button id="addq" class="btn ghost" type="button">+ Add question</button>
+    </section>
+
+    <section class="panel">
+      <button id="gen" class="btn" type="button">Generate test link</button>
+      <p id="d-err" class="err" role="alert"></p>
+      <div id="d-out" hidden style="display:grid;gap:10px;margin-top:10px">
+        <label>Share this link with candidates<input id="d-link" readonly></label>
+        <div class="row row2">
+          <button id="d-copy" class="btn ghost" type="button">Copy link</button>
+          <a id="d-prev" class="btn ghost" target="_blank" rel="noopener">Preview (nothing saved)</a>
+        </div>
+        <p class="hint">Anyone who inspects this link's text can technically decode it (it is packed, not encrypted) — there is no fully hidden way to grade correct answers in the candidate's own browser without a real server. For low-stakes/classroom use this is normally fine.</p>
+      </div>
+    </section>
+  </div>
+
+  <div id="tab-results" hidden>
+    <section class="panel">
+      <h3>Import result codes</h3>
+      <p class="hint">Paste one or more codes candidates sent you (one per line), then decode.</p>
+      <textarea id="r-paste" rows="4" placeholder="Paste result code(s) here"></textarea>
+      <div class="row row2" style="margin-top:10px">
+        <button id="r-add" class="btn" type="button">Decode &amp; add</button>
+        <button id="r-clear" class="btn ghost danger" type="button">Clear all results</button>
+      </div>
+      <p id="r-err" class="err" role="alert"></p>
+    </section>
+    <section class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+        <h3 style="margin:0">Results (<span id="r-count">0</span>)</h3>
+        <div style="display:flex;gap:8px">
+          <button id="r-export" class="btn ghost sm" type="button">Export CSV</button>
+          <button id="r-lb" class="btn sm" type="button">Publish leaderboard link</button>
+        </div>
+      </div>
+      <div style="overflow:auto"><table>
+        <thead><tr><th>Name</th><th>Roll/ID</th><th>Score</th><th>%</th><th>Time taken</th><th>Warnings</th><th>Status</th><th>Submitted</th></tr></thead>
+        <tbody id="r-body"></tbody>
+      </table></div>
+      <div id="lb-out" hidden style="display:grid;gap:10px;margin-top:14px">
+        <label>Share this leaderboard link with candidates (shows rank, class average, highest score)<input id="lb-link" readonly></label>
+        <button id="lb-copy" class="btn ghost sm" type="button" style="justify-self:start">Copy leaderboard link</button>
+        <p class="hint">This is a snapshot of results imported so far — re-publish and re-share after you import more codes to update it. Anyone with the link can see everyone's name and score on the list.</p>
+      </div>
+    </section>
+  </div>
 </main>
 
-<!-- CANDIDATE: start screen -->
+<!-- CANDIDATE: start -->
 <main id="start" class="center" hidden>
   <h2 id="s-title"></h2>
-  <ul class="facts"><li><b id="s-min"></b><span>minutes</span></li></ul>
+  <ul class="facts"><li><b id="s-min"></b><span>minutes</span></li><li><b id="s-qn"></b><span>questions</span></li></ul>
   <p id="s-note"></p>
+  <div class="row" style="width:100%;max-width:420px;margin-bottom:10px">
+    <label>Your name<input id="s-name"></label>
+    <label id="s-roll-wrap">Roll No / ID<input id="s-roll"></label>
+  </div>
   <p id="s-rules" style="font-weight:600"></p>
   <button id="go" class="btn" type="button">Start test</button>
-  <p class="hint" style="margin-top:12px">The timer starts when you press the button and cannot be paused.</p>
+  <p class="err" id="s-err"></p>
 </main>
 
-<!-- CANDIDATE: form inside the site frame -->
+<!-- CANDIDATE: test -->
 <div id="room" hidden>
   <header class="bar">
-    <strong id="r-title"></strong>
+    <strong id="r-title2"></strong>
+    <span id="progress" class="hint" style="white-space:nowrap"></span>
     <span class="clock" id="clock" role="timer" aria-live="off">00:00</span>
-    <button id="finish" class="btn ghost" type="button">I've submitted</button>
+    <button id="submit" class="btn ghost" type="button">Submit test</button>
   </header>
   <div class="track"><i id="fill"></i></div>
-  <div id="last" class="last" hidden>Press Submit in the form now. It closes when the timer ends.</div>
-  <iframe id="frame" title="Test form" allow="fullscreen"></iframe>
-  <div id="live" class="sr" aria-live="polite"></div>
-  <div id="warn" class="warn" role="alertdialog" aria-modal="true" aria-labelledby="w-count" hidden>
+  <div id="last" class="last" hidden>Time is almost up — your test will submit automatically.</div>
+  <div class="qscroll"><div class="inner" id="qhost"></div></div>
+  <div id="live" class="sr" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden"></div>
+  <div id="warn" class="modalOverlay" role="alertdialog" aria-modal="true" aria-labelledby="w-count" hidden>
     <div>
       <h2 id="w-count"></h2>
       <p id="w-text"></p>
@@ -125,7 +211,39 @@ input:focus-visible,textarea:focus-visible,.btn:focus-visible,a:focus-visible{ou
   </div>
 </div>
 
-<!-- CLOSED / DONE -->
+<!-- CANDIDATE: done -->
+<main id="done" class="center" hidden>
+  <h2>Test submitted</h2>
+  <ul class="facts"><li><b id="don-score"></b><span>score</span></li></ul>
+  <p>Send this result code to your teacher (tap the button, or copy and send it yourself):</p>
+  <div class="codebox" id="don-code"></div>
+  <div class="row row2" style="width:100%;max-width:420px;margin-top:12px">
+    <button id="don-copy" class="btn ghost" type="button">Copy code</button>
+    <a id="don-mail" class="btn" hidden target="_blank" rel="noopener">Send to teacher</a>
+  </div>
+  <p class="hint" style="margin-top:14px">Rank, class average, and the highest score aren't known yet — nobody's results are shared automatically. Ask your teacher for the leaderboard link once everyone has submitted.</p>
+</main>
+
+<!-- LEADERBOARD -->
+<main id="leaderboard" class="wrap" hidden>
+  <section class="intro">
+    <h2 id="lb-title"></h2>
+    <ul class="facts">
+      <li><b id="lb-count"></b><span>participants</span></li>
+      <li><b id="lb-avg"></b><span>average score</span></li>
+      <li><b id="lb-top"></b><span>highest score</span></li>
+    </ul>
+  </section>
+  <section class="panel">
+    <label>Find your name<input id="lb-find" placeholder="Type your name or roll no."></label>
+    <div style="overflow:auto;margin-top:10px"><table>
+      <thead><tr><th>Rank</th><th>Name</th><th>Roll/ID</th><th>Score</th><th>%</th></tr></thead>
+      <tbody id="lb-body"></tbody>
+    </table></div>
+  </section>
+</main>
+
+<!-- CLOSED -->
 <main id="closed" class="center" hidden>
   <h2 id="c-title"></h2>
   <p id="c-text"></p>
@@ -134,183 +252,447 @@ input:focus-visible,textarea:focus-visible,.btn:focus-visible,a:focus-visible{ou
 <script>
 (() => {
   const $ = s => document.querySelector(s);
-  const views = ['creator', 'start', 'room', 'closed'];
-  const show = id => {
-    views.forEach(v => $('#' + v).hidden = v !== id);
-    document.body.classList.toggle('inroom', id === 'room');
-  };
+  const views = ['designer', 'start', 'room', 'done', 'closed', 'leaderboard'];
+  const show = id => { views.forEach(v => $('#' + v).hidden = v !== id); document.body.classList.toggle('inroom', id === 'room'); };
 
-  // Link packing (not encryption: it only keeps the address off the screen)
-  const enc = o => btoa(encodeURIComponent(JSON.stringify(o))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  const dec = s => {
-    s = s.replace(/-/g, '+').replace(/_/g, '/');
-    while (s.length % 4) s += '=';
-    return JSON.parse(decodeURIComponent(atob(s)));
-  };
-  const hash = s => { let h = 5381; for (const c of s) h = ((h * 33) ^ c.charCodeAt(0)) >>> 0; return h.toString(36); };
-
+  const enc = o => btoa(encodeURIComponent(JSON.stringify(o))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  const dec = s => { s=s.trim().replace(/-/g,'+').replace(/_/g,'/'); while(s.length%4) s+='='; return JSON.parse(decodeURIComponent(atob(s))); };
+  const hashStr = s => { let h=5381; for(const c of s) h=((h*33)^c.charCodeAt(0))>>>0; return h.toString(36); };
+  const shuffle = arr => { const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+  const escapeHtml = s => (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const renderMath = el => { try { if (window.renderMathInElement) renderMathInElement(el, { delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false }); } catch {} };
   const base = location.href.split(/[?#]/)[0];
+  const preview = new URLSearchParams(location.search).has('preview');
   const de = document.documentElement;
   const fsOK = !!(de.requestFullscreen || de.webkitRequestFullscreen);
   const inFs = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
-  const enterFs = () => { try { const r = (de.requestFullscreen || de.webkitRequestFullscreen).call(de); if (r && r.catch) r.catch(() => {}); } catch {} };
-  const exitFs = () => { try { if (inFs()) { const r = (document.exitFullscreen || document.webkitExitFullscreen).call(document); if (r && r.catch) r.catch(() => {}); } } catch {} };
-  const coarse = matchMedia('(pointer:coarse)').matches;
-  const VIOL = ['Test ended', 'The form was closed because you left the test page after your warnings ran out. Answers you did not submit are not counted.'];
-  const preview = new URLSearchParams(location.search).has('preview');
+  const enterFs = () => { try{ (de.requestFullscreen||de.webkitRequestFullscreen).call(de); }catch{} };
+  const exitFs = () => { try{ if(inFs()) (document.exitFullscreen||document.webkitExitFullscreen).call(document); }catch{} };
   const mem = {};
-  const store = {
-    get: k => { try { return preview ? mem[k] : localStorage.getItem(k); } catch { return mem[k]; } },
-    set: (k, v) => { try { if (preview) mem[k] = v; else localStorage.setItem(k, v); } catch { mem[k] = v; } }
-  };
+  const store = { get:k=>{try{return preview?mem[k]:localStorage.getItem(k);}catch{return mem[k];}}, set:(k,v)=>{try{if(preview)mem[k]=v; else localStorage.setItem(k,v);}catch{mem[k]=v;}} };
 
-  function cleanUrl(raw) {
-    raw = raw.trim();
-    const m = raw.match(/src=["']([^"']+)["']/i);          // accepts pasted <iframe> embed code
-    if (m) raw = m[1].replace(/&amp;/g, '&');
-    let u;
-    try { u = new URL(raw); } catch { return { error: 'Paste the full Google Form link, starting with https://' }; }
-    if (u.hostname === 'forms.gle') return { error: 'Short forms.gle links cannot be embedded. In the form, choose Send, then the link tab, and copy the full docs.google.com address.' };
-    if (u.hostname !== 'docs.google.com' || !u.pathname.startsWith('/forms/')) return { error: 'That is not a Google Forms link (it should start with docs.google.com/forms).' };
-    if (/\/edit\/?$/.test(u.pathname)) return { error: 'That is the editor link. Use Send, then copy the respondent link.' };
-    u.pathname = u.pathname.replace(/\/viewform\/?$/, '') .replace(/\/$/, '') + '/viewform';
-    u.searchParams.set('embedded', 'true');
-    return { url: u.href };
-  }
+  // ===================== DESIGNER =====================
+  function designer() {
+    show('designer');
+    let qid = 1;
+    const draft = Object.assign({
+      t:'Untitled Test', m:30, c:'', w:2, f:true, shq:false, roll:true, rollLabel:'Roll No', email:'', negDefault:0,
+      note:'Answer all questions and press Submit before time runs out.', qs:[]
+    }, JSON.parse(store.get('tb_draft')||'null') || {});
+    const saveDraft = () => store.set('tb_draft', JSON.stringify(draft));
 
-  // ---------- Creator ----------
-  function creator() {
-    show('creator');
-    $('#make').onclick = () => {
-      const r = cleanUrl($('#f-url').value);
-      $('#out').hidden = true;
-      if (r.error) { $('#err').textContent = r.error; return; }
-      $('#err').textContent = '';
+    const bind = (id, key, isCheck) => {
+      const el = $('#' + id);
+      el[isCheck?'checked':'value'] = draft[key];
+      el.oninput = () => { draft[key] = isCheck ? el.checked : el.value; saveDraft(); };
+    };
+    bind('d-title','t'); bind('d-min','m'); bind('d-close','c'); bind('d-warn','w');
+    bind('d-fs','f',true); bind('d-shq','shq',true); bind('d-roll','roll',true);
+    bind('d-rolllabel','rollLabel'); bind('d-negdef','negDefault'); bind('d-email','email'); bind('d-note','note');
+
+    document.querySelectorAll('.tab-btn').forEach(b => b.onclick = () => {
+      document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      $('#tab-build').hidden = b.dataset.tab !== 'build';
+      $('#tab-results').hidden = b.dataset.tab !== 'results';
+    });
+
+    function blankQ(type){ return { id:'q'+(qid++), type, text:'', pts:1, neg: parseFloat(draft.negDefault)||0, img:'', opts:['',''], correct: type==='mcqN'?[]:0, accepted:'' }; }
+    if (!draft.qs.length) draft.qs.push(blankQ('mcq1'));
+
+    function renderQuestions() {
+      const host = $('#qlist'); host.innerHTML = '';
+      draft.qs.forEach((q, qi) => {
+        const card = document.createElement('div'); card.className = 'qcard';
+        const top = document.createElement('div'); top.className = 'top';
+        top.innerHTML = `<span class="badge">Q${qi+1}</span>
+          <select data-role="type">
+            <option value="mcq1">Multiple choice — single answer</option>
+            <option value="mcqN">Multiple choice — multiple answers</option>
+            <option value="tf">True / False</option>
+            <option value="text">Short / long text</option>
+          </select>
+          <label style="display:flex;align-items:center;gap:6px;font-weight:400;flex:none">Points<input type="number" min="0" step="0.5" data-role="pts" style="width:70px"></label>
+          <label style="display:flex;align-items:center;gap:6px;font-weight:400;flex:none">Neg. marks<input type="number" min="0" step="0.25" data-role="neg" style="width:80px"></label>
+          <span style="flex:1"></span>
+          <button type="button" class="btn ghost sm" data-role="del">Delete</button>`;
+        top.querySelector('[data-role=type]').value = q.type;
+        top.querySelector('[data-role=pts]').value = q.pts;
+        top.querySelector('[data-role=neg]').value = q.neg;
+        card.appendChild(top);
+
+        const qtext = document.createElement('textarea'); qtext.rows = 2; qtext.placeholder = 'Question text (equations: $x^2$ or $$...$$)';
+        qtext.value = q.text; qtext.oninput = () => { q.text = qtext.value; saveDraft(); };
+        card.appendChild(qtext);
+
+        const imgRow = document.createElement('div'); imgRow.className = 'imgrow';
+        const imgUrl = document.createElement('input'); imgUrl.type='text'; imgUrl.placeholder='Image URL (optional) — or upload';
+        imgUrl.value = q.img && !q.img.startsWith('data:') ? q.img : '';
+        const fileInp = document.createElement('input'); fileInp.type='file'; fileInp.accept='image/*'; fileInp.style.maxWidth='210px';
+        const preview = document.createElement('img'); preview.hidden = true;
+        const clearImg = document.createElement('button'); clearImg.type='button'; clearImg.className='btn ghost sm'; clearImg.textContent='Remove image';
+        function refreshImg(){ if (q.img) { preview.src = q.img; preview.hidden = false; } else preview.hidden = true; }
+        imgUrl.oninput = () => { q.img = imgUrl.value.trim(); saveDraft(); refreshImg(); };
+        fileInp.onchange = () => {
+          const f = fileInp.files[0]; if (!f) return;
+          if (f.size > 700*1024) { alert('Keep images under ~700KB — larger images make the shareable link too long to send.'); fileInp.value=''; return; }
+          const r = new FileReader();
+          r.onload = () => { q.img = r.result; imgUrl.value=''; saveDraft(); refreshImg(); };
+          r.readAsDataURL(f);
+        };
+        clearImg.onclick = () => { q.img=''; imgUrl.value=''; fileInp.value=''; saveDraft(); refreshImg(); };
+        refreshImg();
+        imgRow.append(imgUrl, fileInp, clearImg, preview);
+        card.appendChild(imgRow);
+
+        const body = document.createElement('div'); body.dataset.role = 'body'; card.appendChild(body);
+        host.appendChild(card);
+
+        function renderBody() {
+          body.innerHTML = '';
+          if (q.type === 'mcq1' || q.type === 'mcqN') {
+            q.opts.forEach((opt, oi) => {
+              const row = document.createElement('div'); row.className = 'optrow';
+              const mark = document.createElement('input');
+              mark.type = q.type === 'mcq1' ? 'radio' : 'checkbox';
+              if (q.type === 'mcq1') { mark.name = q.id + '-correct'; mark.checked = q.correct === oi; }
+              else mark.checked = q.correct.includes(oi);
+              mark.onchange = () => {
+                if (q.type === 'mcq1') q.correct = oi;
+                else { const s = new Set(q.correct); mark.checked ? s.add(oi) : s.delete(oi); q.correct = [...s]; }
+                saveDraft();
+              };
+              const txt = document.createElement('input'); txt.type = 'text'; txt.placeholder = 'Option text (equations OK)'; txt.value = opt;
+              txt.oninput = () => { q.opts[oi] = txt.value; saveDraft(); };
+              const rm = document.createElement('button'); rm.type='button'; rm.className='btn ghost sm'; rm.textContent='✕';
+              rm.onclick = () => { q.opts.splice(oi,1); if(q.type==='mcq1' && q.correct===oi) q.correct=0; if(q.type==='mcqN') q.correct=q.correct.filter(c=>c!==oi).map(c=>c>oi?c-1:c); saveDraft(); renderBody(); };
+              row.append(mark, txt, rm); body.appendChild(row);
+            });
+            const add = document.createElement('button'); add.type='button'; add.className='btn ghost sm'; add.textContent='+ Add option';
+            add.onclick = () => { q.opts.push(''); saveDraft(); renderBody(); };
+            body.appendChild(add);
+            const hint = document.createElement('p'); hint.className='hint'; hint.textContent = q.type==='mcq1' ? 'Mark the one correct option.' : 'Mark all correct options.';
+            body.appendChild(hint);
+          } else if (q.type === 'tf') {
+            q.opts = ['True','False'];
+            ['True','False'].forEach((label, oi) => {
+              const row = document.createElement('div'); row.className='optrow';
+              const mark = document.createElement('input'); mark.type='radio'; mark.name=q.id+'-tf'; mark.checked = q.correct===oi;
+              mark.onchange = () => { q.correct = oi; saveDraft(); };
+              const txt = document.createElement('span'); txt.textContent = label;
+              row.append(mark, txt); body.appendChild(row);
+            });
+          } else if (q.type === 'text') {
+            const ta = document.createElement('textarea'); ta.rows=2; ta.placeholder='Accepted answers, comma-separated (matched case-insensitively; partial match counts)';
+            ta.value = q.accepted; ta.oninput = () => { q.accepted = ta.value; saveDraft(); };
+            body.appendChild(ta);
+          }
+        }
+        renderBody();
+
+        top.querySelector('[data-role=type]').onchange = e => {
+          const nt = e.target.value; const fresh = blankQ(nt); fresh.id=q.id; fresh.text=q.text; fresh.pts=q.pts; fresh.neg=q.neg; fresh.img=q.img;
+          draft.qs[qi] = fresh; saveDraft(); renderQuestions();
+        };
+        top.querySelector('[data-role=pts]').oninput = e => { q.pts = parseFloat(e.target.value)||0; saveDraft(); };
+        top.querySelector('[data-role=neg]').oninput = e => { q.neg = parseFloat(e.target.value)||0; saveDraft(); };
+        top.querySelector('[data-role=del]').onclick = () => { draft.qs.splice(qi,1); saveDraft(); renderQuestions(); };
+      });
+      renderMath(host);
+    }
+    renderQuestions();
+    $('#addq').onclick = () => { draft.qs.push(blankQ('mcq1')); saveDraft(); renderQuestions(); };
+
+    $('#gen').onclick = () => {
+      const errs = [];
+      if (!draft.qs.length) errs.push('Add at least one question.');
+      draft.qs.forEach((q,i) => {
+        if (!q.text.trim()) errs.push('Question ' + (i+1) + ' needs text.');
+        if ((q.type==='mcq1'||q.type==='mcqN') && q.opts.filter(o=>o.trim()).length < 2) errs.push('Question ' + (i+1) + ' needs at least 2 options.');
+        if (q.type==='mcqN' && !q.correct.length) errs.push('Question ' + (i+1) + ' needs at least one correct option marked.');
+        if (q.type==='text' && !q.accepted.trim()) errs.push('Question ' + (i+1) + ' needs at least one accepted answer.');
+      });
+      if (errs.length) { $('#d-err').textContent = errs[0]; return; }
+      $('#d-err').textContent = '';
       const cfg = {
-        t: $('#f-title').value.trim() || 'Test',
-        u: r.url,
-        m: Math.max(1, Math.min(600, parseInt($('#f-min').value, 10) || 1)),
-        c: $('#f-close').value ? new Date($('#f-close').value).getTime() : 0,
-        i: $('#f-note').value.trim(),
-        w: (n => isNaN(n) ? 2 : Math.max(0, Math.min(5, n)))(parseInt($('#f-warn').value, 10)),
-        f: $('#f-fs').checked
+        t: draft.t||'Test', m: Math.max(1,Math.min(600,parseInt(draft.m,10)||30)),
+        c: draft.c ? new Date(draft.c).getTime() : 0, w: Math.max(0,Math.min(5,parseInt(draft.w,10)||0)),
+        f: !!draft.f, shq: !!draft.shq, roll: !!draft.roll, rollLabel: draft.rollLabel||'Roll No',
+        email: draft.email||'', note: draft.note||'',
+        qs: draft.qs.map(q => ({ t:q.text, ty:q.type, o:q.opts, c:q.correct, a:q.accepted, p:q.pts, n:q.neg||0, img:q.img||'' }))
       };
       const p = enc(cfg);
-      $('#f-link').value = base + '#' + p;
-      $('#prev').href = base + '?preview=1#' + p;
-      $('#out').hidden = false;
+      const link = base + '#' + p;
+      if (link.length > 60000) { $('#d-err').textContent = 'This link is very large (probably from embedded images) and may fail to share. Use image URLs instead of uploads, or remove some images.'; }
+      $('#d-link').value = link;
+      $('#d-prev').href = base + '?preview=1#' + p;
+      $('#d-out').hidden = false;
     };
-    $('#copy').onclick = async () => {
-      const el = $('#f-link');
-      try { await navigator.clipboard.writeText(el.value); } catch { el.select(); document.execCommand('copy'); }
-      $('#copy').textContent = 'Copied';
-      setTimeout(() => $('#copy').textContent = 'Copy link', 1500);
+    $('#d-copy').onclick = async () => {
+      try { await navigator.clipboard.writeText($('#d-link').value); } catch { $('#d-link').select(); document.execCommand('copy'); }
+      $('#d-copy').textContent = 'Copied'; setTimeout(()=>$('#d-copy').textContent='Copy link', 1400);
+    };
+
+    function resultsKey() { return 'tb_results_' + hashStr($('#d-link').value || draft.t); }
+    function loadResults() { return JSON.parse(store.get(resultsKey()) || '[]'); }
+    function saveResults(arr) { store.set(resultsKey(), JSON.stringify(arr)); }
+    function renderResults() {
+      const rows = loadResults();
+      $('#r-count').textContent = rows.length;
+      $('#r-body').innerHTML = rows.map(r => `<tr>
+        <td>${escapeHtml(r.nm)}</td><td>${escapeHtml(r.rn||'')}</td>
+        <td>${r.sc}/${r.tot}</td><td>${r.tot? Math.round(r.sc/r.tot*100):0}%</td>
+        <td>${r.du}m</td><td>${r.vi}</td><td>${r.st}</td>
+        <td>${new Date(r.ts).toLocaleString()}</td></tr>`).join('');
+    }
+    renderResults();
+    $('#r-add').onclick = () => {
+      const lines = $('#r-paste').value.split('\n').map(l=>l.trim()).filter(Boolean);
+      if (!lines.length) { $('#r-err').textContent = 'Paste at least one code.'; return; }
+      const rows = loadResults(); let added = 0, bad = 0;
+      lines.forEach(line => {
+        try { const r = dec(line); if (!r || typeof r.sc !== 'number') throw 0;
+          if (!rows.some(x => x.code === line)) { r.code = line; rows.push(r); added++; }
+        } catch { bad++; }
+      });
+      saveResults(rows); renderResults(); $('#r-paste').value = '';
+      $('#r-err').textContent = bad ? (added + ' added, ' + bad + ' code(s) could not be read.') : '';
+    };
+    $('#r-clear').onclick = () => { if (confirm('Clear all imported results?')) { saveResults([]); renderResults(); } };
+    $('#r-export').onclick = () => {
+      const rows = loadResults();
+      const head = ['Name','Roll/ID','Score','Total','Percent','Minutes taken','Warnings','Status','Submitted at'];
+      const csvRow = a => a.map(v => { v = String(v??''); return /[",\n]/.test(v) ? '"' + v.replace(/"/g,'""') + '"' : v; }).join(',');
+      const lines = [csvRow(head), ...rows.map(r => csvRow([r.nm, r.rn||'', r.sc, r.tot, r.tot?Math.round(r.sc/r.tot*100):0, r.du, r.vi, r.st, new Date(r.ts).toLocaleString()]))];
+      const blob = new Blob([lines.join('\n')], {type:'text/csv'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'results.csv'; a.click();
+    };
+    $('#r-lb').onclick = () => {
+      const rows = loadResults();
+      if (!rows.length) { $('#r-err').textContent = 'No results imported yet.'; return; }
+      $('#r-err').textContent = '';
+      const sorted = rows.slice().sort((a,b) => b.sc - a.sc);
+      const payload = { k:'lb', title: draft.t || 'Test', rows: sorted.map(r => ({ nm:r.nm, rn:r.rn||'', sc:r.sc, tot:r.tot })) };
+      $('#lb-link').value = base + '#' + enc(payload);
+      $('#lb-out').hidden = false;
+    };
+    $('#lb-copy').onclick = async () => {
+      try { await navigator.clipboard.writeText($('#lb-link').value); } catch { $('#lb-link').select(); document.execCommand('copy'); }
+      $('#lb-copy').textContent = 'Copied'; setTimeout(()=>$('#lb-copy').textContent='Copy leaderboard link', 1400);
     };
   }
 
-  // ---------- Candidate ----------
-  function closed(h, t) { $('#c-title').textContent = h; $('#c-text').textContent = t; show('closed'); }
+  // ===================== LEADERBOARD (read-only) =====================
+  function leaderboard(payload) {
+    document.title = (payload.title || 'Test') + ' — Leaderboard';
+    const rows = (payload.rows || []).map((r,i) => Object.assign({}, r, { rank: i+1 }));
+    const scores = rows.map(r => r.sc);
+    const avg = scores.length ? scores.reduce((a,b)=>a+b,0)/scores.length : 0;
+    const top = scores.length ? Math.max(...scores) : 0;
+    $('#lb-title').textContent = payload.title || 'Test';
+    $('#lb-count').textContent = rows.length;
+    $('#lb-avg').textContent = avg.toFixed(1);
+    $('#lb-top').textContent = top;
+    $('#lb-body').innerHTML = rows.map(r => `<tr><td>${r.rank}</td><td>${escapeHtml(r.nm)}</td><td>${escapeHtml(r.rn||'')}</td><td>${r.sc}/${r.tot}</td><td>${r.tot?Math.round(r.sc/r.tot*100):0}%</td></tr>`).join('');
+    $('#lb-find').oninput = () => {
+      const q = $('#lb-find').value.trim().toLowerCase();
+      document.querySelectorAll('#lb-body tr').forEach((tr,i) => {
+        const r = rows[i];
+        tr.style.background = q && ((r.nm||'').toLowerCase().includes(q) || (r.rn||'').toLowerCase().includes(q)) ? '#E6ECFF' : '';
+      });
+    };
+    show('leaderboard');
+  }
+
+  // ===================== CANDIDATE =====================
+  function closed(h,t){ $('#c-title').textContent=h; $('#c-text').textContent=t; show('closed'); }
 
   function candidate(p) {
     let cfg;
-    try { cfg = dec(p); new URL(cfg.u); } catch { return closed('This test link is not valid', 'Ask the organiser for a fresh link.'); }
+    try { cfg = dec(p); if (!Array.isArray(cfg.qs) || !cfg.qs.length) throw 0; } catch { return closed('This test link is not valid', 'Ask the organiser for a fresh link.'); }
     document.title = cfg.t;
-    cfg.w = cfg.w ?? 2;
-    const key = 'tfr_' + hash(p);
+    const key = 'tb_run_' + hashStr(p);
     let st = JSON.parse(store.get(key) || 'null');
 
-    if (st && st.s === 'done') return closed('Response recorded', 'You have finished this test. You can close this tab.');
-    if (st && st.s === 'expired') return closed('Time is up', 'The form is closed. Answers you did not submit are not counted.');
-    if (st && st.s === 'violation') return closed(...VIOL);
-    if (st) return begin(true);
-    if (cfg.c && Date.now() >= cfg.c) return closed('This test has closed', 'The link stopped accepting new attempts on ' + new Date(cfg.c).toLocaleString() + '.');
+    if (st && st.s !== 'run') {
+      if (st.s === 'done') { showDone(st.result); return; }
+      return closed('Time is up', 'This test has already been submitted or closed on this device.');
+    }
+    if (!st && cfg.c && Date.now() >= cfg.c) return closed('This test has closed', 'The link stopped accepting new attempts on ' + new Date(cfg.c).toLocaleString() + '.');
 
-    $('#s-title').textContent = cfg.t;
-    $('#s-min').textContent = cfg.m;
-    $('#s-note').textContent = cfg.i;
-    $('#s-rules').textContent = 'Stay on this page' + (cfg.f && fsOK ? ' and in full screen' : '') + '. Switching tabs, leaving the app or exiting full screen gives a warning. ' +
-      (cfg.w ? 'After ' + cfg.w + ' warning' + (cfg.w > 1 ? 's' : '') + ', your test ends.' : 'Doing so ends your test at once.');
-    show('start');
-    $('#go').onclick = () => { st = { s: 'run', a: Date.now(), v: 0 }; store.set(key, JSON.stringify(st)); if (cfg.f) enterFs(); begin(); };
+    if (!st) {
+      $('#s-title').textContent = cfg.t;
+      $('#s-min').textContent = cfg.m;
+      $('#s-qn').textContent = cfg.qs.length;
+      $('#s-note').textContent = cfg.note;
+      $('#s-roll-wrap').hidden = !cfg.roll;
+      $('#s-roll-wrap').firstChild.textContent = cfg.rollLabel;
+      $('#s-rules').textContent = 'Stay on this page' + (cfg.f && fsOK ? ' and in full screen' : '') + '. Switching tabs, leaving the page, or minimising gives a warning. ' +
+        (cfg.w ? 'After ' + cfg.w + ' warning' + (cfg.w>1?'s':'') + ', your test submits automatically.' : 'Doing so submits your test at once.');
+      show('start');
+      $('#go').onclick = () => {
+        const nm = $('#s-name').value.trim();
+        if (!nm) { $('#s-err').textContent = 'Enter your name.'; return; }
+        if (cfg.roll && !$('#s-roll').value.trim()) { $('#s-err').textContent = 'Enter your ' + cfg.rollLabel + '.'; return; }
+        const qOrder = cfg.shq ? shuffle(cfg.qs.map((_,i)=>i)) : cfg.qs.map((_,i)=>i);
+        const optOrders = cfg.qs.map(q => (q.ty==='mcq1'||q.ty==='mcqN') ? shuffle(q.o.map((_,i)=>i)) : q.o.map((_,i)=>i));
+        st = { s:'run', a:Date.now(), v:0, nm, rn:$('#s-roll').value.trim(), qOrder, optOrders, ans:{} };
+        store.set(key, JSON.stringify(st));
+        if (cfg.f) enterFs();
+        begin();
+      };
+      return;
+    }
+    begin(true);
 
     function begin(resumed) {
-      const end = Math.min(st.a + cfg.m * 60000, cfg.c || Infinity);
+      const end = Math.min(st.a + cfg.m*60000, cfg.c || Infinity);
       const total = end - st.a;
-      const frame = $('#frame'), clock = $('#clock'), fill = $('#fill');
-      let running = true, said5 = false, said1 = false, warnOpen = false, timer, guard;
+      const clock=$('#clock'), fill=$('#fill'), qhost=$('#qhost');
+      let running = true, said5=false, said1=false, warnOpen=false, timer, guard, lost=0;
 
-      $('#r-title').textContent = cfg.t;
+      $('#r-title2').textContent = cfg.t;
       show('room');
-      frame.src = cfg.u;
-      window.onbeforeunload = e => { if (running) { e.preventDefault(); e.returnValue = ''; } };
+      window.onbeforeunload = e => { if (running) { e.preventDefault(); e.returnValue=''; } };
+
+      qhost.innerHTML = '';
+      st.qOrder.forEach((qi, pos) => {
+        const q = cfg.qs[qi];
+        const box = document.createElement('div'); box.className = 'qview';
+        const negTxt = q.n ? (' · −' + q.n + ' if wrong') : '';
+        box.innerHTML = `<div class="qn">Question ${pos+1} of ${st.qOrder.length} · ${q.p} pt${q.p==1?'':'s'}${negTxt}</div>
+          <p style="font-weight:600;margin:6px 0 10px">${escapeHtml(q.t)}</p>
+          ${q.img ? `<img src="${q.img}" alt="">` : ''}`;
+        const body = document.createElement('div');
+        if (q.ty==='mcq1' || q.ty==='tf') {
+          st.optOrders[qi].forEach(oi => {
+            const lab = document.createElement('label'); lab.className='choice';
+            const inp = document.createElement('input'); inp.type='radio'; inp.name='q'+qi;
+            inp.checked = st.ans[qi]===oi;
+            inp.onchange = () => { st.ans[qi]=oi; store.set(key, JSON.stringify(st)); updateProgress(); };
+            lab.append(inp, document.createTextNode(q.o[oi])); body.appendChild(lab);
+          });
+        } else if (q.ty==='mcqN') {
+          st.optOrders[qi].forEach(oi => {
+            const lab = document.createElement('label'); lab.className='choice';
+            const inp = document.createElement('input'); inp.type='checkbox';
+            const cur = st.ans[qi] || [];
+            inp.checked = cur.includes(oi);
+            inp.onchange = () => { const s=new Set(st.ans[qi]||[]); inp.checked?s.add(oi):s.delete(oi); st.ans[qi]=[...s]; store.set(key, JSON.stringify(st)); updateProgress(); };
+            lab.append(inp, document.createTextNode(q.o[oi])); body.appendChild(lab);
+          });
+        } else {
+          const ta = document.createElement('textarea'); ta.rows=3;
+          ta.value = st.ans[qi] || '';
+          ta.oninput = () => { st.ans[qi]=ta.value; store.set(key, JSON.stringify(st)); updateProgress(); };
+          body.appendChild(ta);
+        }
+        box.appendChild(body); qhost.appendChild(box);
+      });
+      renderMath(qhost);
+      function updateProgress() {
+        const answered = st.qOrder.filter(qi => { const a=st.ans[qi]; return a!==undefined && a!=='' && !(Array.isArray(a)&&!a.length); }).length;
+        $('#progress').textContent = answered + ' / ' + st.qOrder.length + ' answered';
+      }
+      updateProgress();
 
       const stop = status => {
         if (!running) return;
         running = false;
         clearInterval(timer); clearInterval(guard);
-        exitFs();
-        $('#warn').hidden = true;
-        frame.src = 'about:blank';
-        st.s = status;
-        store.set(key, JSON.stringify(st));
-        if (status === 'done') closed('Response recorded', 'You have finished this test. You can close this tab.');
-        else if (status === 'violation') closed(...VIOL);
-        else closed('Time is up', 'The form is closed. Answers you did not submit are not counted.');
+        exitFs(); $('#warn').hidden = true;
+        let score = 0, tot = 0;
+        cfg.qs.forEach((q,qi) => { tot += q.p; score += scoreQuestion(q, st.ans[qi]); });
+        const result = {
+          nm: st.nm, rn: st.rn, sc: Math.max(0, Math.round(score*100)/100), tot,
+          du: Math.max(1, Math.round((Date.now()-st.a)/60000)), vi: st.v, st: status, ts: Date.now()
+        };
+        st.s = 'done'; st.result = result; store.set(key, JSON.stringify(st));
+        showDone(result);
       };
 
       const tick = () => {
         const left = end - Date.now();
-        if (left <= 0) return stop('expired');
-        const s = Math.ceil(left / 1000), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60;
-        clock.textContent = (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0');
-        fill.style.width = Math.max(0, left / total * 100) + '%';
-        const lvl = left <= 60000 ? 'bad' : left <= 300000 ? 'warn' : '';
-        clock.className = 'clock ' + lvl;
-        fill.className = lvl;
+        if (left <= 0) return stop('timeup');
+        const s=Math.ceil(left/1000), h=Math.floor(s/3600), m=Math.floor(s%3600/60), x=s%60;
+        clock.textContent = (h? h+':'+String(m).padStart(2,'0') : m) + ':' + String(x).padStart(2,'0');
+        fill.style.width = Math.max(0, left/total*100) + '%';
+        const lvl = left<=60000?'badlvl':left<=300000?'warnlvl':'';
+        clock.className='clock '+lvl; fill.className=lvl;
         $('#last').hidden = left > 60000;
-        if (left <= 300000 && !said5 && total > 600000) { said5 = true; $('#live').textContent = 'Five minutes left'; }
-        if (left <= 60000 && !said1) { said1 = true; $('#live').textContent = 'One minute left'; }
+        if (left<=300000 && !said5 && total>600000) { said5=true; $('#live').textContent='Five minutes left'; }
+        if (left<=60000 && !said1) { said1=true; $('#live').textContent='One minute left'; }
       };
-      tick();
-      timer = setInterval(tick, 250);
+      tick(); timer = setInterval(tick, 250);
 
-      $('#finish').onclick = () => {
-        if (confirm('⚠️You must click “SUBMIT” inside the Google Form to complete your submission. Do NOT leave or close the form until you have pressed “SUBMIT” and received the submission confirmation.')) stop('done');
-      };
+      $('#submit').onclick = () => { if (confirm('Submit your test now? You cannot change answers after this.')) stop('submitted'); };
 
-      // ---- Stay-on-page guard ----
       const violate = reason => {
         if (!running || warnOpen) return;
-        st.v = (st.v || 0) + 1;
-        store.set(key, JSON.stringify(st));
+        st.v = (st.v||0)+1; store.set(key, JSON.stringify(st));
         if (st.v > cfg.w) return stop('violation');
         warnOpen = true;
         $('#w-count').textContent = 'Warning ' + st.v + ' of ' + cfg.w;
-        $('#w-text').textContent = reason + ' The timer is still running. ' +
-          (st.v === cfg.w ? 'Doing this again will end your test.' : 'After ' + cfg.w + ' warnings your test ends.');
-        $('#warn').hidden = false;
-        $('#w-ok').focus();
+        $('#w-text').textContent = reason + ' The timer is still running. ' + (st.v===cfg.w ? 'Doing this again will submit your test.' : 'After ' + cfg.w + ' warnings your test submits automatically.');
+        $('#warn').hidden = false; $('#w-ok').focus();
       };
       const fsCheck = () => { if (running && cfg.f && fsOK && !inFs()) violate('You exited full screen.'); };
-      $('#w-ok').onclick = () => { warnOpen = false; $('#warn').hidden = true; if (cfg.f) enterFs(); };
+      $('#w-ok').onclick = () => { warnOpen=false; $('#warn').hidden=true; if (cfg.f) enterFs(); };
       document.addEventListener('visibilitychange', () => { if (document.hidden) violate('You left the test page.'); });
       document.addEventListener('fullscreenchange', fsCheck);
       document.addEventListener('webkitfullscreenchange', fsCheck);
-      if (!coarse) {                       // laptops: catches switching to another window that stays visible
-        let lost = 0;
-        guard = setInterval(() => {
-          if (!running || warnOpen || document.hasFocus()) { lost = 0; return; }
-          if (++lost >= 4) { lost = 0; violate('The test window lost focus.'); }
-        }, 400);
-      }
+      guard = setInterval(() => {
+        if (!running || warnOpen || document.hasFocus()) { lost=0; return; }
+        if (++lost >= 4) { lost=0; violate('The test window lost focus.'); }
+      }, 400);
       if (resumed) violate('The test page was reloaded or reopened.');
       else if (cfg.f && fsOK) setTimeout(fsCheck, 1500);
+    }
+
+    function isCorrect(q, ans) {
+      if (q.ty==='mcq1' || q.ty==='tf') return ans===q.c;
+      if (q.ty==='mcqN') { const a=(ans||[]).slice().sort().join(','), c=(q.c||[]).slice().sort().join(','); return a===c; }
+      if (q.ty==='text') {
+        const norm = s => (s||'').toString().toLowerCase().trim().replace(/\s+/g,' ');
+        const cand = norm(ans); if (!cand) return false;
+        const accepted = (q.a||'').split(',').map(norm).filter(Boolean);
+        return accepted.some(a => cand===a || cand.includes(a));
+      }
+      return false;
+    }
+    function scoreQuestion(q, ans) {
+      const attempted = ans!==undefined && ans!=='' && !(Array.isArray(ans)&&!ans.length);
+      if (!attempted) return 0;
+      return isCorrect(q, ans) ? q.p : -(q.n||0);
+    }
+
+    function showDone(result) {
+      $('#don-score').textContent = result.sc + ' / ' + result.tot;
+      const code = enc(result);
+      $('#don-code').textContent = code;
+      const copyBtn = $('#don-copy');
+      copyBtn.onclick = async () => { try{ await navigator.clipboard.writeText(code); }catch{} copyBtn.textContent='Copied'; setTimeout(()=>copyBtn.textContent='Copy code',1400); };
+      if (cfg.email) {
+        const subj = 'Test result: ' + cfg.t + ' — ' + result.nm;
+        const body = 'Name: ' + result.nm + (result.rn ? ('\n'+cfg.rollLabel+': '+result.rn) : '') + '\nScore: ' + result.sc + '/' + result.tot + '\n\nCode (do not edit):\n' + code;
+        $('#don-mail').href = 'mailto:' + encodeURIComponent(cfg.email) + '?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(body);
+        $('#don-mail').hidden = false;
+      }
+      show('done');
     }
   }
 
   // ---------- Route ----------
   const p = location.hash.slice(1);
-  p ? candidate(p) : creator();
+  if (!p) {
+    designer();
+  } else {
+    let payload = null;
+    try { payload = dec(p); } catch {}
+    if (payload && payload.k === 'lb') leaderboard(payload);
+    else if (payload && Array.isArray(payload.qs)) candidate(p);
+    else closed('This link is not valid', 'Ask the organiser for a fresh link.');
+  }
   window.addEventListener('hashchange', () => location.reload());
 })();
 </script>
